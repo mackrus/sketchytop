@@ -55,9 +55,7 @@ async fn main() {
         let mut latency_str = "N/A".to_string();
         let mut net_color = "0xfff39660"; // Orange default for N/A
 
-        if let Ok((IcmpPacket::V4(_packet), duration)) =
-            pinger.ping(PingSequence(0), &payload).await
-        {
+        if let Ok((IcmpPacket::V4(_), duration)) = pinger.ping(PingSequence(0), &payload).await {
             let latency = duration.as_millis();
             latency_str = format!("{}ms", latency);
             net_color = if latency > 100 {
