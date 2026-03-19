@@ -2,6 +2,13 @@
 
 All notable changes to `sketchytop` will be documented in this file.
 
+## [0.1.1] - 2026-03-19
+
+### Added
+- Network latency (ping) monitoring.
+- Configurable ping target and SketchyBar item name.
+- Dynamic coloring for latency stats.
+
 ## [0.1.0] - 2026-03-19
 
 ### Added

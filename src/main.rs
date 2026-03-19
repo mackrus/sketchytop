@@ -1,5 +1,6 @@
 use clap::Parser;
 use std::process::Command;
+use surge_ping::{Client, Config, IcmpPacket, PingIdentifier, PingSequence};
 use sysinfo::System;
 use tokio::time::{Duration, sleep};
 
@@ -18,12 +19,26 @@ struct Args {
     /// CPU item name in SketchyBar
     #[arg(long, default_value = "cpu.percent")]
     cpu_item: String,
+
+    /// Network item name in SketchyBar
+    #[arg(long, default_value = "network.latency")]
+    net_item: String,
+
+    /// Ping target
+    #[arg(long, default_value = "1.1.1.1")]
+    ping_target: String,
 }
 
 #[tokio::main]
 async fn main() {
     let args = Args::parse();
     let mut sys = System::new_all();
+
+    let client = Client::new(&Config::default()).unwrap();
+    let mut payload = [0u8; 56];
+    let mut pinger = client
+        .pinger(args.ping_target.parse().unwrap(), PingIdentifier(0))
+        .await;
 
     loop {
         sys.refresh_cpu_all();
@@ -35,6 +50,25 @@ async fn main() {
         let used_mem = sys.used_memory();
         let mem_perc = (used_mem as f32 / total_mem as f32) * 100.0;
         let used_gb = used_mem as f32 / 1024.0 / 1024.0 / 1024.0;
+
+        // Perform ping
+        let mut latency_str = "N/A".to_string();
+        let mut net_color = "0xfff39660"; // Orange default for N/A
+
+        match pinger.ping(PingSequence(0), &payload).await {
+            Ok((IcmpPacket::V4(packet), duration)) => {
+                let latency = duration.as_millis();
+                latency_str = format!("{}ms", latency);
+                net_color = if latency > 100 {
+                    "0xfffc5d7c" // Red
+                } else if latency > 50 {
+                    "0xfff39660" // Orange
+                } else {
+                    "0xff9ed072" // Green
+                };
+            }
+            _ => {}
+        }
 
         let cpu_color = if cpu_usage > 80.0 {
             "0xfffc5d7c"
@@ -61,6 +95,10 @@ async fn main() {
                 &args.ram_item,
                 &format!("label={:.1}GB", used_gb),
                 &format!("label.color={}", mem_color),
+                "--set",
+                &args.net_item,
+                &format!("label={}", latency_str),
+                &format!("label.color={}", net_color),
             ])
             .output();
 
