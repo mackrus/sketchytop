@@ -35,7 +35,7 @@ async fn main() {
     let mut sys = System::new_all();
 
     let client = Client::new(&Config::default()).unwrap();
-    let mut payload = [0u8; 56];
+    let payload = [0u8; 56];
     let mut pinger = client
         .pinger(args.ping_target.parse().unwrap(), PingIdentifier(0))
         .await;
@@ -55,19 +55,16 @@ async fn main() {
         let mut latency_str = "N/A".to_string();
         let mut net_color = "0xfff39660"; // Orange default for N/A
 
-        match pinger.ping(PingSequence(0), &payload).await {
-            Ok((IcmpPacket::V4(packet), duration)) => {
-                let latency = duration.as_millis();
-                latency_str = format!("{}ms", latency);
-                net_color = if latency > 100 {
-                    "0xfffc5d7c" // Red
-                } else if latency > 50 {
-                    "0xfff39660" // Orange
-                } else {
-                    "0xff9ed072" // Green
-                };
-            }
-            _ => {}
+        if let Ok((IcmpPacket::V4(_packet), duration)) = pinger.ping(PingSequence(0), &payload).await {
+            let latency = duration.as_millis();
+            latency_str = format!("{}ms", latency);
+            net_color = if latency > 100 {
+                "0xfffc5d7c" // Red
+            } else if latency > 50 {
+                "0xfff39660" // Orange
+            } else {
+                "0xff9ed072" // Green
+            };
         }
 
         let cpu_color = if cpu_usage > 80.0 {
