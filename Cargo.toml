@@ -3,9 +3,13 @@ name = "sketchytop"
 version = "0.1.0"
 edition = "2024"
 authors = ["Markus Bajlo"]
-description = "A minimal sketchytop plugin written in rust that shows basic performance stats"
+description = "A minimal SketchyBar plugin written in Rust that shows basic performance stats"
 license = "MIT"
 repository = "https://github.com/mackrus/sketchytop"
+homepage = "https://github.com/mackrus/sketchytop"
+readme = "README.md"
+keywords = ["sketchybar", "macos", "system-monitor", "btop", "rust"]
+categories = ["command-line-utilities", "os::macos-apis"]
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
