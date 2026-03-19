@@ -12,6 +12,11 @@ Designed for [SketchyBar](https://github.com/FelixKratz/SketchyBar).
 
 ## Installation
 
+### Via Cargo
+```bash
+cargo install sketchytop
+```
+
 ### From Source
 ```bash
 git clone https://github.com/mackrus/sketchytop.git
