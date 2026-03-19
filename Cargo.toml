@@ -1,6 +1,6 @@
 [package]
 name = "sketchytop"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 authors = ["Markus Bajlo"]
 description = "A minimal SketchyBar plugin written in Rust that shows basic performance stats"
@@ -13,5 +13,6 @@ categories = ["command-line-utilities", "os::macos-apis"]
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
+surge-ping = "0.8.4"
 sysinfo = "0.38.4"
 tokio = { version = "1.50.0", features = ["full"] }
